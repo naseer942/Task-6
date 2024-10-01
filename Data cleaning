@@ -1,0 +1,65 @@
+# Import necessary libraries
+import pandas as pd
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+from scipy import stats
+
+# Load the dataset
+data = pd.read_csv('diabetes_data.csv')
+
+# 1. Data Cleaning
+# Check for missing values
+print("Missing values:\n", data.isnull().sum())
+
+# Fill or drop missing values (example: fill with mean or mode)
+data['alcohol_consumption'].fillna(data['alcohol_consumption'].mean(), inplace=True)
+data.dropna(subset=['diabetes_status', 'smoking_status'], inplace=True)
+
+# Convert categorical variables to 'category' type
+data['diabetes_status'] = data['diabetes_status'].astype('category')
+data['smoking_status'] = data['smoking_status'].astype('category')
+
+# 2. Exploratory Data Analysis (EDA)
+# Descriptive statistics
+print(data.describe())
+
+# Visualize the distribution of diabetes status
+sns.countplot(x='diabetes_status', data=data)
+plt.title('Distribution of Diabetes Status')
+plt.show()
+
+# Analyze smoking status vs diabetes
+sns.countplot(x='smoking_status', hue='diabetes_status', data=data)
+plt.title('Smoking Status vs Diabetes Status')
+plt.show()
+
+# Analyze alcohol consumption
+sns.boxplot(x='diabetes_status', y='alcohol_consumption', data=data)
+plt.title('Alcohol Consumption by Diabetes Status')
+plt.show()
+
+# 3. Question Formulation
+# Example questions:
+# - What is the relationship between smoking and diabetes?
+# - How does alcohol consumption differ among diabetes patients?
+
+# 4. Statistical Testing
+# Chi-squared test for smoking status and diabetes
+contingency_table = pd.crosstab(data['smoking_status'], data['diabetes_status'])
+chi2, p, _, _ = stats.chi2_contingency(contingency_table)
+print(f'Chi-squared test p-value: {p}')
+
+# 5. Data Visualization
+# Pairplot for visualizing multiple relationships
+sns.pairplot(data, hue='diabetes_status')
+plt.title('Pairplot of Variables by Diabetes Status')
+plt.show()
+
+# 6. Insights and Conclusions
+if p < 0.05:
+    print("There is a significant relationship between smoking and diabetes.")
+else:
+    print("No significant relationship found between smoking and diabetes.")
+
+# You can further summarize findings and insights here.
